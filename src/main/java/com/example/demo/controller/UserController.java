@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 @Slf4j
 public class UserController {
-
+// 예외처리는 컨트롤러로 넘겨주는게 좋다. @exceptionHandler 를 이용한다
     @GetMapping("/login")
     public void login(){
         log.info("GET /login...");
@@ -25,7 +25,7 @@ public class UserController {
         log.info("details :" + authentication.getDetails());
         log.info("credentials :" + authentication.getCredentials());
 
-        model.addAttribute( "authentication", authentication);git
+        model.addAttribute( "authentication", authentication);
     }
     @GetMapping("/member")
     public void member(){
