@@ -6,21 +6,26 @@
 </head>
 <body>
 
-<h1>LOGIN PAGE</h1>
-<form action="/login" method="post">
+<h1>JOIN PAGE</h1>
+<form name="joinForm" action="/join" method="post" onsubmit="return false">
     USERNAME : <input name="username" /> <br/>
     PASSWORD : <input name="password" type="password" /> <br/>
-    <div>
-        <div>
-            <input type="checkbox" name="remember-me" id="rememberME" />
-            <label for="rememberME">로그인 상태를 유지</label>
-        </div>
-    </div>
-    <input type="submit" />
-    <div th:text="${param.error}"></div> <!--URL에 들어가는 경우에는 param.error 처럼 적어줘야한다.-->
+    <button onclick="isValid()">가입요청</button><!--스크립트와 연결-->
 </form>
-<!--트랜젝션을 만들어 문제가 생겼을 때 백업을 시키는 것-->
-<a href="/join">회원가입</a><br>
+<!--데이터 유효성 체크 첫번째 if 문은 비어있을 경우에 나타내는 용  form.submit();을 전달-->
+<script>
+    const form = document.joinForm;
+    const isValid=()=>{
+        if(form.username.value.trim()==""){
+            alert("USERNAME은 반드시 입력해야 합니다");
+            return;
+        } else if(form.password.value.trim()==""){
+            alert("PASSWORD는 반드시 입력해야 합니다");
+            return;
+        }
+        form.submit();
+    }
+</script>
 
 </body>
 </html>

@@ -13,11 +13,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
@@ -43,6 +40,7 @@ public class SecurityConfig  {
         http.authorizeHttpRequests(
                 authorize->{
                     authorize.requestMatchers("/","/login").permitAll();
+                    authorize.requestMatchers("/join").hasRole("ANONYMOUS"); // ANONYMOUS 비로그인 계정을 뜻 함
                     authorize.requestMatchers("/user").hasRole("USER"); // ROLE_USER
                     authorize.requestMatchers("/member").hasRole("MEMBER"); // ROLE_MEMBER
                     authorize.requestMatchers("/admin").hasRole("ADMIN"); // ROLE_ADMIN
@@ -85,9 +83,17 @@ public class SecurityConfig  {
                     rm.rememberMeParameter("remember-me");
                     rm.alwaysRemember(false); // 항상 토큰을 주고받을 건지 묻는 용
                     rm.tokenValiditySeconds(3600); //60*60 로그인 유지 시간 // 여기까지가 브라우저에 전달하는 것
-                    rm.tokenRepository(tokenRepository()); // db가 읽는다. //
+                    rm.tokenRepository(tokenRepository()); // db가 읽는다.
                 }
         );
+
+        //Oauth2
+        http.oauth2Login(
+                oauth2->{
+                    oauth2.loginPage("/login"); // 템플렛에 있는 로그인으로 잡아줌
+                }
+        );
+
         return http.build();
     }
 
@@ -100,27 +106,28 @@ public class SecurityConfig  {
         return repo;
     }
 
-    @Bean
-    public UserDetailsService userDetailsService(PasswordEncoder passwordEncoder) {
-        InMemoryUserDetailsManager userDetailsManager = new InMemoryUserDetailsManager();
-
-        userDetailsManager.createUser(User.withUsername("user")
-                .password(passwordEncoder.encode("1234"))
-                .roles("USER")
-                .build());//컨텍스트 홀드에 저장 시킴
-
-        userDetailsManager.createUser(User.withUsername("member")
-                .password(passwordEncoder.encode("1234"))
-                .roles("MEMBER")
-                .build());
-
-        userDetailsManager.createUser(User.withUsername("admin")
-                .password(passwordEncoder.encode("1234"))
-                .roles("ADMIN")
-                .build());
-
-        return userDetailsManager;
-    }
+//    @Bean
+//    public UserDetailsService userDetailsService(PasswordEncoder passwordEncoder) {
+//        InMemoryUserDetailsManager userDetailsManager = new InMemoryUserDetailsManager();
+//
+//        userDetailsManager.createUser(User.withUsername("user")
+//                .password(passwordEncoder.encode("1234"))
+//                .roles("USER")
+//                .build());//컨텍스트 홀드에 저장 시킴
+//
+//        userDetailsManager.createUser(User.withUsername("member")
+//                .password(passwordEncoder.encode("1234"))
+//                .roles("MEMBER")
+//                .build());
+//
+//        userDetailsManager.createUser(User.withUsername("admin")
+//                .password(passwordEncoder.encode("1234"))
+//                .roles("ADMIN")
+//                .build());
+//        // 메모리형태를 임시로 만들어 놓은 것으로 나중에는 DB에 따로 넣어줘야한다.
+//
+//        return userDetailsManager;
+//    }
 
     // BCryptPasswordEncoder Bean 등록 - 패스워드 검증에 사용
     @Bean
