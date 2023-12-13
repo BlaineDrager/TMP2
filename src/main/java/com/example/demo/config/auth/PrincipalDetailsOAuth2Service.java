@@ -3,6 +3,10 @@ package com.example.demo.config.auth;
 import com.example.demo.config.auth.provider.KakaoUserInfo;
 import com.example.demo.config.auth.provider.OAuth2UserInfo;
 import com.example.demo.domain.dto.UserDto;
+import com.example.demo.domain.entity.User;
+import com.example.demo.domain.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
@@ -10,11 +14,19 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class PrincipalDetailsOAuth2Service extends DefaultOAuth2UserService {
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @Override
-    public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
+    public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException { // throws OAuth2AuthenticationException 예외사항 발생시
         System.out.println("[PrincipalDetailsOAuth2Service] loadUser() userRequest" + userRequest);
         System.out.println("[PrincipalDetailsOAuth2Service] loadUser() userRequest.getClientRegistration()" + userRequest.getClientRegistration());
         System.out.println("[PrincipalDetailsOAuth2Service] loadUser() userRequest.getAccessToken()" + userRequest.getAccessToken());
@@ -44,15 +56,38 @@ public class PrincipalDetailsOAuth2Service extends DefaultOAuth2UserService {
         }
         System.out.println("[PrincipalDetailsOAuth2Service] oAuth2UserInfo : " + oAuth2UserInfo);
 
+        // 계정에 대한 유저 ID와 password
+        String username = oAuth2UserInfo.getProvider()+"_"+oAuth2UserInfo.getProviderId();
+        String password = passwordEncoder.encode("1234");// 인코딩 작업 이 필요함으로 위의 PasswordEncoder를 가져옴 // 훗날엔 "1234" 들어가는 자리를 바꿔줘야함
+
+        //PrincipalDetails 생성이전에 하는 DB조회
+        Optional<User> optional = userRepository.findById(username); // 동일한 계정을 찾는 과정
+        UserDto dto = null;
+        if (optional.isEmpty()) {
+            // 동일한 계정이 없으면 새로운 계정을 생성하게
+            User user = User // UserEntity 객체를 만들었음
+                    .builder()
+                    .username(username)
+                    .password(password)
+                    .role("ROLE_USER")
+                    .provider(oAuth2UserInfo.getProvider())
+                    .providerId(oAuth2UserInfo.getProviderId())
+                    .build(); // stream 의 문법을 따라한 형식이다
+            userRepository.save(user); // 저장
+            dto = User.entityToDto(user); // Entity를 dto로 변경
+            System.out.println("[PrincipalDetailsOAuth2Service] loadUser() "+ oAuth2UserInfo.getProvider() + " 최초 로그인");
+        } else { // 내용이 있단 소리
+            User user = optional.get(); // 유저정보를 담아 entity에 담아
+            dto = User.entityToDto(user); // dto로 변경시켜줌
+            System.out.println("[PrincipalDetailsOAuth2Service] loadUser() "+ oAuth2UserInfo.getProvider() + " 기존 계정 로그인");
+        }
+
+
         //PrincipalDetails 생성 작업
-        UserDto dto = new UserDto();
-        dto.setUsername("TMP_KAKAO_" + oAuth2UserInfo.getProviderId());
-        dto.setPassword("1234");
-        dto.setRole("ROLE_USER");
         PrincipalDetails principalDetails = new PrincipalDetails();
         principalDetails.setAttributes(oAuth2UserInfo.getAttributes()); // 기존에 있던 것에서 Attribute를 꺼내옴
-        principalDetails.setAccessToken(userRequest.getAccessToken().getTokenValue());
+        principalDetails.setAccessToken(userRequest.getAccessToken().getTokenValue()); // AccessToken을 가져오는건데 정확히는 Token의 값을 가지고 온것
         principalDetails.setUserDto(dto); // principal에 넣어줌
-        return principalDetails;
+        return principalDetails; // 어덴티케이션을 한것
     }
 }

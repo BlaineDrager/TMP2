@@ -13,7 +13,7 @@ class TxTestServiceTest {
     @Test
     @Transactional(transactionManager = "dataSourceTransactionManager", rollbackFor = Exception.class)
     public void t1(){
-        txTestService.TxMapper();
+        txTestService.txMapper();
     }
 
     @Test

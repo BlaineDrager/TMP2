@@ -24,7 +24,7 @@ import org.springframework.security.web.authentication.rememberme.PersistentToke
 public class SecurityConfig  {
 
     @Autowired
-    private HikariDataSource dataSource; // dataSource 를 인자로 넣어야함
+    private HikariDataSource dataSource; // dataSource 를 인자로 넣어야하기 위해
 
     @Bean
     public SecurityFilterChain config(HttpSecurity http) throws Exception {
@@ -33,7 +33,6 @@ public class SecurityConfig  {
         http.csrf(
                 (config)->{config.disable();} // 람다식은 {}를 제외할 수 있다
         );
-
 
 
         //요청 URL별 접근 제한
@@ -65,7 +64,7 @@ public class SecurityConfig  {
                 logout.permitAll();
                 logout.logoutUrl("/logout");
                 logout.addLogoutHandler(new CustomLogoutHandler()); // 로그아웃 실패시 핸들러
-                logout.logoutSuccessHandler(new CustomLogoutSuccessHandler()); // 로그아웃 성공시 핸들러
+                logout.logoutSuccessHandler(customLogoutSuccessHandler()); // 로그아웃 성공시 핸들러
             }
         );
         // 예외처리
@@ -106,6 +105,12 @@ public class SecurityConfig  {
         return repo;
     }
 
+    //CUSTOMLOGOUTSUCCESS BEAN
+    @Bean
+    public CustomLogoutSuccessHandler customLogoutSuccessHandler(){
+        return new CustomLogoutSuccessHandler();
+    }
+
 //    @Bean
 //    public UserDetailsService userDetailsService(PasswordEncoder passwordEncoder) {
 //        InMemoryUserDetailsManager userDetailsManager = new InMemoryUserDetailsManager();
@@ -134,7 +139,8 @@ public class SecurityConfig  {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+    // 부모타입의 객체를 자식 타입으로 강제 형변환하여 자식타입이 가지고 있는 매서드나 필드값을 사용하려 한다면 해당 부모객체는 자식의 생성자로 객체화 되어있어야하는 전제조건이 필요하다.
 
 
-
+// 인코딩은 암호화 디코딩은 암호화 해제
 }
