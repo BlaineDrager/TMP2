@@ -15,6 +15,7 @@ public class KakaoUserInfo implements OAuth2UserInfo{
     // 확장된 부분
     private String id;
     private Map<String,Object> attributes; // 확장된 부분은 직접 접근은 힘듬 하지만 아래의 오버라이드를 통해서 접근이 가능하게 만들었다.
+
     @Override
     public String getName() {
         return (String)attributes.get("nickname");

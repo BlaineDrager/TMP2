@@ -11,11 +11,10 @@ import java.net.URLEncoder;
 
 public class CustomAuthenticationFailureHandler implements AuthenticationFailureHandler {
 
-
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
         //인증 실패시의 핸들러
-        System.out.println("[CustomAuthenticationFailureHandler] onAuthenticationFailure() exception" + exception);
+        System.out.println("[CustomAuthenticationFailureHandler] onAuthenticationFailure() exception : " + exception);
         response.sendRedirect("/login?error="+ URLEncoder.encode(exception.getMessage(), "UTF-8")); // URLEncoder 인코딩을 해줘야함
     }
 }

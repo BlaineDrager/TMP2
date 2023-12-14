@@ -22,6 +22,21 @@ public class PrincipalDetails implements UserDetails, OAuth2User { // 실제 사
         this.userDto = dto;
     }
 
+    // OAUTH2 에 관련된 정보들을 담는것
+    private String accessToken;
+    private Map<String,Object> attributes; // 속성들을 Map형태로 담아두기 위한 것.
+    @Override
+    public Map<String, Object> getAttributes() {
+        return null;
+    }
+
+    @Override
+    public String getName() {
+        return null;
+    }
+
+    // 관리자 메뉴로 false로 잡으면 로그인 조차 못한다
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() { // getAuthorities 는 Role(역할)이다
         Collection<GrantedAuthority> collection = new ArrayList(); // 여러개라면 포이치문을 써야함
@@ -64,19 +79,4 @@ public class PrincipalDetails implements UserDetails, OAuth2User { // 실제 사
         return true;
     }
 
-    // OAUTH2 에 관련된 정보들을 담는것
-    private String accessToken;
-    private Map<String,Object> attributes; // 속성들을 Map형태로 담아두기 위한 것.
-    @Override
-    public Map<String, Object> getAttributes() {
-        return null;
-    }
-
-    @Override
-    public String getName() {
-        return null;
-    }
-
-
-    // 관리자 메뉴로 false로 잡으면 로그인 조차 못한다
 }

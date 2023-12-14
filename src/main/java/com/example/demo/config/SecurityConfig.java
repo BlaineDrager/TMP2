@@ -56,17 +56,20 @@ public class SecurityConfig  {
             login.failureHandler(new CustomAuthenticationFailureHandler());
         });
 
-//1208 핸들러 설정 시작 컨트롤러는 핸들러의 하위 카테고리에 있는 것이다
+        //1208 핸들러 설정 시작 컨트롤러는 핸들러의 하위 카테고리에 있는 것이다
 
         //로그아웃
         http.logout(
             (logout)->{
                 logout.permitAll();
                 logout.logoutUrl("/logout");
-                logout.addLogoutHandler(new CustomLogoutHandler()); // 로그아웃 실패시 핸들러
+//                logout.addLogoutHandler(new CustomLogoutHandler()); // 로그아웃 실패시 핸들러
+                logout.addLogoutHandler(customLogoutHandler()); // 로그아웃 실패시 핸들러 2
                 logout.logoutSuccessHandler(customLogoutSuccessHandler()); // 로그아웃 성공시 핸들러
             }
         );
+        //Session
+
         // 예외처리
         http.exceptionHandling(
                 ex->{
@@ -105,10 +108,16 @@ public class SecurityConfig  {
         return repo;
     }
 
-    //CUSTOMLOGOUTSUCCESS BEAN
+    //CUSTOMLOGOUTSUCCESS BEAN 빈등록
     @Bean
     public CustomLogoutSuccessHandler customLogoutSuccessHandler(){
         return new CustomLogoutSuccessHandler();
+    }
+
+    //CUSTOMLOGOUTSUCCESS BEAN 빈등록
+    @Bean
+    public CustomLogoutHandler customLogoutHandler(){
+        return new CustomLogoutHandler();
     }
 
 //    @Bean

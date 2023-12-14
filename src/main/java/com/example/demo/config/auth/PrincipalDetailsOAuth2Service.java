@@ -1,6 +1,8 @@
 package com.example.demo.config.auth;
 
+import com.example.demo.config.auth.provider.GoogleUserInfo;
 import com.example.demo.config.auth.provider.KakaoUserInfo;
+import com.example.demo.config.auth.provider.NaverUserInfo;
 import com.example.demo.config.auth.provider.OAuth2UserInfo;
 import com.example.demo.domain.dto.UserDto;
 import com.example.demo.domain.entity.User;
@@ -42,19 +44,26 @@ public class PrincipalDetailsOAuth2Service extends DefaultOAuth2UserService {
 
         //OAuth Server Provider 구별
         String provider = userRequest.getClientRegistration().getRegistrationId(); // provider 에 대한 정보를 꺼내오는 작업
-        System.out.println("[PrincipalDetailsOAuth2Service] provider : " + provider);
+        System.out.println("[PrincipalDetailsOAuth2Service] loadUser() provider : " + provider);
 
         OAuth2UserInfo oAuth2UserInfo = null;
         if (provider != null && provider.equals("kakao")){
             KakaoUserInfo kakaoUserInfo = new KakaoUserInfo(oAuth2User.getAttributes().get("id").toString(), (Map<String, Object>) oAuth2User.getAttributes().get("properties") );
-            System.out.println("[PrincipalDetailsOAuth2Service] kakaoUserInfo : " + kakaoUserInfo);
+            System.out.println("[PrincipalDetailsOAuth2Service] loadUser() kakaoUserInfo : " + kakaoUserInfo);
             oAuth2UserInfo = kakaoUserInfo; // 이걸 프린시퍼 유저 디테일로 바꿔 주기 위해
         }else if (provider != null && provider.equals("naver")) {
-
+            Map<String, Object> resp = (Map<String, Object>)oAuth2User.getAttributes().get("response");
+            String id = (String)resp.get("id");
+            NaverUserInfo naverUserInfo = new NaverUserInfo(id, resp);
+            System.out.println("[PrincipalDetailsOAuth2Service] loadUser() naverUserInfo : " + naverUserInfo);
+            oAuth2UserInfo = naverUserInfo;
         }else if (provider != null && provider.equals("google")) {
-
+            // 객체 만들기
+            String id = (String) oAuth2User.getAttributes().get("sub");
+            GoogleUserInfo googleUserInfo = new GoogleUserInfo(id,oAuth2User.getAttributes());
+            oAuth2UserInfo = googleUserInfo;
         }
-        System.out.println("[PrincipalDetailsOAuth2Service] oAuth2UserInfo : " + oAuth2UserInfo);
+        System.out.println("[PrincipalDetailsOAuth2Service] loadUser() oAuth2UserInfo : " + oAuth2UserInfo);
 
         // 계정에 대한 유저 ID와 password
         String username = oAuth2UserInfo.getProvider()+"_"+oAuth2UserInfo.getProviderId();
