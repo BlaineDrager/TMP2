@@ -48,7 +48,7 @@ public class PrincipalDetailsOAuth2Service extends DefaultOAuth2UserService {
 
         OAuth2UserInfo oAuth2UserInfo = null;
         if (provider != null && provider.equals("kakao")){
-            KakaoUserInfo kakaoUserInfo = new KakaoUserInfo(oAuth2User.getAttributes().get("id").toString(), (Map<String, Object>) oAuth2User.getAttributes().get("properties") );
+            KakaoUserInfo kakaoUserInfo = new KakaoUserInfo(oAuth2User.getAttributes().get("id").toString(), (Map<String, Object>) oAuth2User.getAttributes().get("properties") ); // (Map<String, Object>)는
             System.out.println("[PrincipalDetailsOAuth2Service] loadUser() kakaoUserInfo : " + kakaoUserInfo);
             oAuth2UserInfo = kakaoUserInfo; // 이걸 프린시퍼 유저 디테일로 바꿔 주기 위해
         }else if (provider != null && provider.equals("naver")) {

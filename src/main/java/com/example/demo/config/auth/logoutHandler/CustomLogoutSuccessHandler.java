@@ -11,7 +11,7 @@ import org.springframework.security.web.authentication.logout.LogoutSuccessHandl
 import java.io.IOException;
 
 
-public class CustomLogoutSuccessHandler implements LogoutSuccessHandler {
+public class CustomLogoutSuccessHandler implements LogoutSuccessHandler { // 핸들러는 웹요청을 처리해주는 역할을 한다 컨트롤도 일종의 핸들러이다.
 
     @Value("${spring.security.oauth2.client.registration.kakao.client-id}")// propeties에 있던 것을 가지고 옴 // 이것을 쓸려면 SecurityConfig의 CUSTOMLOGOUTSUCCESS BEAN를 만들어 줘야함
     private String kakaoClientId;
@@ -34,6 +34,8 @@ public class CustomLogoutSuccessHandler implements LogoutSuccessHandler {
             response.sendRedirect(url);
             return;
         } else if (provider != null && provider.equals("google")) {
+            String url = "http://accounts.google.com/logout"; // 서버와 연결을 완전히 끊는 처리
+            response.sendRedirect(url);
             return;
         }
 
@@ -46,4 +48,23 @@ public class CustomLogoutSuccessHandler implements LogoutSuccessHandler {
     이후 두가지를 복사해 어플리케이션.프로퍼티스에있는 naver 부분의 상단 두줄에 각각 클라이언트 ID 와 클라이언트 시크릿을 넣어준다
     다시 브라우저로 가서 도큐먼트의
      */
+
+    /* git 추가 순서
+    git branch // 브랜치 확인
+    // 만약 브랜치를 생성한다면 git branch [브랜치 이름] 을 적어주면 된다.
+    git switch HSH // 내 브랜치로 이동
+    git add . //
+    git commit -m v0.0 //
+    git push origin //
+    fatal: The current branch HSH has no upstream branch.
+    To push the current branch and set the remote as upstream, use
+
+    git push --set-upstream origin HSH
+
+    To have this happen automatically for branches without a tracking
+    upstream, see 'push.autoSetupRemote' in 'git help config'.
+    // 이런 형식
+
+    git push -u origin HSH // HSH 브랜치에 push를 하는 작업
+    */
 }

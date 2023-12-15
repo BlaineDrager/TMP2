@@ -48,7 +48,7 @@ public class CustomLogoutHandler implements LogoutHandler {
 
 
             //parameter(생략)
-            //MultiValueMap<String,String> params = new LinkedMultiValueMap<>(); // 요청 파라미터에 들어가는것을 확인
+            //MultiValueMap<String,String> params = new LinkedMultiValueMap<>(); // 요청 파라미터에 들어가는것을 확인 // Map의 경우 <> 형식으로 사용하고 <> 내부에 key값과 value 값이 필요하다 key의 경우에는 html의 id 처럼 동일한 값을 넣으면 선행된 key 값의 value는 무시되고 후행된 key값의 value가 나타나게 되기에 동일한 key값을 사용하면 안된다.
 
             //Header + Parameter 단위 생성
             HttpEntity<MultiValueMap<String,String>> entity = new HttpEntity(headers); // MultiValueMap<String,String>로 요청 파라메터를 보낼 수 있게 된다
@@ -91,8 +91,14 @@ public class CustomLogoutHandler implements LogoutHandler {
 //            System.out.println("[CustomLogoutHandler] logout() resp" + resp);
 //            System.out.println("[CustomLogoutHandler] logout() resp.getBody()" + resp.getBody());
 
-        } else if (provider != null && provider.equals("google")) {
-
+        } else if (provider != null && provider.equals("google")) { // 로그아웃시 연결 끊기 작업 중 하나.
+            // 액세스 토큰 추출하기
+            String accessToken = principalDetails.getAccessToken();
+            // URL 잡기
+            String url = "https://accounts.google.com/o/oauth2/revoke?token=" + accessToken; // 토큰을 만료시키는 작업
+            // 레스트 템플릿으로 요청
+            ResponseEntity<String> resp =  restTemplate.exchange(url,HttpMethod.GET,null,String.class);
+            System.out.println("[CustomLogoutHandler] logout() google resp : "+ resp); // 작동 하는지 확인용
         }
 
         // http세션 초기화 작업

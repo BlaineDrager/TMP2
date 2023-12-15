@@ -24,7 +24,7 @@ public class PrincipalDetails implements UserDetails, OAuth2User { // 실제 사
 
     // OAUTH2 에 관련된 정보들을 담는것
     private String accessToken;
-    private Map<String,Object> attributes; // 속성들을 Map형태로 담아두기 위한 것.
+    private Map<String,Object> attributes; // 속성들을 Map형태로 담아두기 위한 것. // Map은 Key와 Value 한쌍으로 이루어진 자료형
     @Override
     public Map<String, Object> getAttributes() {
         return null;

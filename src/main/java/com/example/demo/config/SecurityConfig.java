@@ -23,6 +23,10 @@ import org.springframework.security.web.authentication.rememberme.PersistentToke
 @EnableWebSecurity
 public class SecurityConfig  {
 
+
+    // 아키텍칭을 하는 기술들
+    // 문제해결능력을 키워야 한다. 스킬업을 하고싶다면 본인이 스스로 찾는 능력이 길러져야한다.
+
     @Autowired
     private HikariDataSource dataSource; // dataSource 를 인자로 넣어야하기 위해
 
